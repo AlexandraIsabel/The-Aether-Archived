@@ -134,13 +134,12 @@ public class AetherEventHandler
 		ItemStack stack = event.getEmptyBucket();
 		EntityPlayer player = event.getEntityPlayer();
 		FluidStack fluid = FluidUtil.getFluidContained(event.getEmptyBucket());
-		
+
 		boolean isWater = (!AetherConfig.gameplay_changes.skyroot_bucket_only && (stack.getItem() == Items.WATER_BUCKET
 				|| (fluid != null && fluid.getFluid().getBlock() == Blocks.WATER)))
 				|| stack.getItem() == ItemsAether.skyroot_bucket && stack.getMetadata() == 1;
-		boolean isLava = (stack.getItem() == Items.LAVA_BUCKET
-				|| (fluid != null && fluid.getFluid().getBlock() == Blocks.LAVA));
-
+		boolean isFluidLava = fluid != null && fluid.getFluid().getBlock().equals(Blocks.LAVA);
+		boolean isStackLava = stack.getItem().equals(Items.LAVA_BUCKET);
 		boolean validDimension = (player.dimension == 0 || player.dimension == AetherConfig.dimension.aether_dimension_id);
 
 		if (target != null && target.typeOfHit == Type.BLOCK && validDimension)
@@ -169,14 +168,12 @@ public class AetherEventHandler
 					event.setResult(Result.ALLOW);
 				}
 			}
-
-			if (isLava && player.dimension == AetherConfig.dimension.aether_dimension_id)
+			if ((isStackLava || isFluidLava) && player.dimension == AetherConfig.dimension.aether_dimension_id)
 			{
 				if (player.capabilities.isCreativeMode && player.isSneaking())
 				{
 					return;
 				}
-
 				if (worldObj.isAirBlock(hitPos))
 				{
 					worldObj.spawnParticle(EnumParticleTypes.SMOKE_LARGE, hitPos.getX() + 0.5, hitPos.getY() + 1, hitPos.getZ() + 0.5, 0, 0, 0);
